@@ -21,9 +21,20 @@ app.get('/add-user', (req, res) => {
     res.render('add-user');
 });
 
-app.post('/add-user', (req, res) => {
+app.post('/add-user', async (req, res) => {
     var dados = req.body;
-    console.log(dados)
-})
+    await User.create(dados)
+        .then( () => {
+            // return res.json({
+            //     mensagem: "Usuário cadastrado com sucesso";
+            // })
+            res.redirect('/');
+        }).catch( (err) => {
+            return res.status(400).json({
+                erro: true,
+                mensagem: `Erro: Usuário não Cadastrado - ${err}`
+            });
+        });
+});
 
 app.listen(3333);
