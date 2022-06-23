@@ -1,8 +1,8 @@
 const express = require('express');
 const app = express();
-const port = 4500;
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
+require('dotenv').config();
 
 
 app.use(express.json());
@@ -80,6 +80,7 @@ app.post("/user", async (req, res) => {
         })
     })
 });
+
 app.put("/user",async (req, res) => {
     const{ id} = req.body;
 
@@ -96,27 +97,69 @@ app.put("/user",async (req, res) => {
         })
     })
 });
- app.delete("/user/:id",async (req, res)=>{
-     const {id} = req.params;
-     await User.destroy({where: { id}})
-     .then(()=>{
-         return res.json({
-             erro:false,
-             mensagem: "Usuario apagado com sucesso"
-         });
 
-     }).catch(() => {
-         return res.status(400).json({
-             erro:true,
-             mensagem: `Erro: ${err} Usuário não apagado...`
-         });
-     });
- });
+app.delete("/user/:id",async (req, res)=>{
+    const {id} = req.params;
+    await User.destroy({where: { id }})
+    .then(()=>{
+        return res.json({
+            erro:false,
+            mensagem: "Usuario apagado com sucesso"
+        });
+    }).catch(() => {
+        return res.status(400).json({
+            erro:true,
+            mensagem: `Erro: ${err} Usuário não apagado...`
+        });
+    });
+});
 
+app.get("/login", async (req, res) => {
+    const user = await User.findOne({
+        attributes: ['id','name', 'email','gender','password'],
+        where: {
+            email: req.body.email
+        }
+    })
+    if(user === null){
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Usuário ou senha incontrado"
+        })
+    }
+    if(!(await bcrypt.compare(req.body.password, user.password))){
+        return res.status(400).json({
+            erro: true,
+            mensagem:"Erro: Usuário ou senha incorreta!!!"
+        })
+    }
+    return res.json({
+        erro:false,
+        mensagem: "Login realizado com sucesso",
+        user
+    })
+});
 
+app.put('/user-senha', async (req, res) => {
+    const { id, password } = req.body;
+    var senhaCrypt = await bcrypt.hash(password, 8);
 
-app.listen(port,() => {
-    console.log(`Servico iniciado na porta ${port} http://localhost:${port}`);
+    await User.update({password: senhaCrypt }, {where: {id: id}})
+    .then(() => {
+        return res.json({
+            erro: false,
+            mensagem: "Senha editada com sucesso!"
+        });
+    }).catch ( (err) => {
+        return res.status(400).json({
+            erro: true,
+            mensagem: `Erro: ${err}... A senha não foi alterada!!!`
+        })
+    })
+})
+
+app.listen(process.env.PORT,() => {
+    console.log(`Servico iniciado na porta ${process.env.PORT} http://localhost:${process.env.PORT}`);
 });
 
 app.listen(6333);
