@@ -3,16 +3,16 @@ module.exports = function sendMail(to,cc,subject,html){
 
     const smtpTransport = nodemailer.createTransport({
         host: process.env.SMTP_SERVER,
-        port: parseINt(process.env.STMP_PORT),
-        secure: true,
+        port: parseInt(process.env.SMTP_PORT),
+        // secure: true,
         auth: {
             user: process.env.SMTP_USERNAMEACCOUNT,
             pass: process.env.SMTP_PASSWORD
         }
-    });
+    })
 
     const message = {
-        from: process.env.SMTP_USERNAMEACCOUNT,
+        from: 'contatoteste@jsfernando.com',
         to,
         cc,
         bcc: process.env.SMTP_USERNAMEACCOUNT,
@@ -20,12 +20,12 @@ module.exports = function sendMail(to,cc,subject,html){
         html
     }
 
-    smtpTransport.sendMail(message, (err, res) => {
+    smtpTransport.sendMail(message, (err, res) =>{
         if(err){
-            console.log(`Erro ao enviar email: ${err}`)
+            console.log(`Erro ao enviar email: ${err}`);
         } else {
             console.log('Email enviado com sucesso!')
         }
         smtpTransport.close();
-    });
+    })
 }
