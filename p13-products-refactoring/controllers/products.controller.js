@@ -1,9 +1,11 @@
 const Products = require('../models/Products');
+const Categories = require('../models/Categories');
 
 exports.findAll = async (req, res) => {
     await Products.findAll({
         attributes: ['id','name', 'description'],
-        order:[['id','ASC']]
+        order:[['id','ASC']], 
+        include:[Categories]
     })
     .then( (products) => {
         return res.json({
@@ -22,7 +24,17 @@ exports.findOne = async (req, res) => {
     const { id } = req.params;
     try {
         // await User.findAll({ where: { id: id }})
-        const products = await Products.findByPk(id);
+        // const products = await Products.findByPk(id);
+        // if(!products) {
+        //     return res.status(400).json({
+        //         erro: true,
+        //         mensagem: "Erro Nehum Produto encontrado!"
+        //     })
+        // }
+        const products = await Products.findAll({
+            where: {id: id},
+            include:[Categories]
+        });
         if(!products) {
             return res.status(400).json({
                 erro: true,

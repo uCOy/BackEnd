@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
+const sendMail = require('../providers/mailProvider');
 
 exports.findAll = async (req, res) => {
     await User.findAll({
@@ -93,6 +95,8 @@ exports.create = async (req, res) => {
 
 exports.update = async (req, res) => {
     const { id } = req.body;
+    var dados = req.body;
+    dados.password = await bcrypt.hash(dados.password, 8);
 
     await User.update(req.body, {where: {id}})
     .then(() => {
@@ -152,10 +156,17 @@ exports.login = async (req, res) => {
     })
 };
 
-exports.alterPass = async (req, res) => {
+exports.password = async (req, res) => {
     const {id, password } = req.body;
     var senhaCrypt = await bcrypt.hash(password, 8);
 
+    const users = await User.findByPk(id);
+        if(!users){
+            return res.status(400).json({
+                erro: true,
+                mensagem: "Erro: Nenhum Usuário encontrado!"
+            })
+    }
     await User.update({password: senhaCrypt }, {where: {id: id}})
     .then(() => {
         return res.json({

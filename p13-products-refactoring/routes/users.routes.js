@@ -9,10 +9,10 @@ usersRoutes.post("/create", users.create);
 
 usersRoutes.put("/update", users.update);
 
-usersRoutes.delete("/delete:id", users.delete);
+usersRoutes.delete("/delete/:id", users.delete);
 
 usersRoutes.get("/login", users.login);
 
-usersRoutes.put("/password", users.alterPass);
+usersRoutes.put("/password", users.password);
 
 module.exports = usersRoutes;

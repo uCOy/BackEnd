@@ -9,6 +9,6 @@ productsRoutes.post("/create", products.create);
 
 productsRoutes.put("/update", products.update);
 
-productsRoutes.delete("/delete:id", products.delete);
+productsRoutes.delete("/delete/:id", products.delete);
 
 module.exports = productsRoutes;
