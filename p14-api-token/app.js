@@ -150,7 +150,7 @@ app.post("/login", async (req, res) => {
     if(user === null){
         return res.status(400).json({
             erro: true,
-            mensagem:"Erro: Email ou senha incorreta!!!"
+            mensagem:"Erro: Email ou senha incorreta!!"
         })
     }
     if(!(await bcrypt.compare(req.body.password, user.password))){
