@@ -67,7 +67,7 @@ app.get('/user/:id', async (req, res) => {
     }
 });
 
-app.post("/user", async (req, res) => {
+app.post("/user", validarToken, async (req, res) => {
 
     var dados = req.body;
     dados.password = await bcrypt.hash(dados.password, 8);
@@ -75,17 +75,17 @@ app.post("/user", async (req, res) => {
     await User.create(dados)
     .then( ()=>{
         /* enviar e-mail */
-        let to = dados.email;
-        let cc = '';
-        subject = 'Sua conta foi criada com sucesso!';
+        // let to = dados.email;
+        // let cc = '';
+        // subject = 'Sua conta foi criada com sucesso!';
         
-        let mailBody = userCreateMailTemplate({
-            name: dados.name, 
-            email: dados.email, 
-            gender: dados.gender
-        })
+        // let mailBody = userCreateMailTemplate({
+        //     name: dados.name, 
+        //     email: dados.email, 
+        //     gender: dados.gender
+        // })
+        // sendMail(to, cc, subject, mailBody);
         /* ************* */
-        sendMail(to, cc, subject, mailBody);
 
         return res.json({
             erro: false,
