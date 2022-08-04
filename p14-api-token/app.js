@@ -44,7 +44,7 @@ app.get("/users", validarToken, async (req, res) =>{
 
 })
 
-app.get('/user/:id', async (req, res) => {
+app.get('/user/:id', validarToken, async (req, res) => {
     const { id } = req.params;
     try {
         // await User.findAll({ where: {id: id}})
@@ -99,7 +99,7 @@ app.post("/user", validarToken, async (req, res) => {
     })
 })
 
-app.put("/user", async (req, res) => {
+app.put("/user", validarToken, async (req, res) => {
     const { id } = req.body;
 
     await User.update(req.body, {where: {id}})
