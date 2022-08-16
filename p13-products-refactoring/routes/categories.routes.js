@@ -1,14 +1,16 @@
 const categoriesRoutes = require('express').Router();
 const categories = require('../controllers/categories.controller');
+const { validarToken } = require('../middlewares/auth');
 
-categoriesRoutes.get("/all", categories.findAll);
 
-categoriesRoutes.get("/show/:id", categories.findOne);
+categoriesRoutes.get("/all", validarToken, categories.findAll);
 
-categoriesRoutes.post("/create", categories.create);
+categoriesRoutes.get("/show/:id", validarToken, categories.findOne);
 
-categoriesRoutes.put("/update", categories.update);
+categoriesRoutes.post("/create", validarToken, categories.create);
 
-categoriesRoutes.delete("/delete/:id", categories.delete);
+categoriesRoutes.put("/update", validarToken, categories.update);
+
+categoriesRoutes.delete("/delete/:id", validarToken, categories.delete);
 
 module.exports = categoriesRoutes;

@@ -1,0 +1,32 @@
+{
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon app.js"
+  },
+  "name": "projetinho-backend",
+  "description": "",
+  "version": "1.0.0",
+  "main": "app.js",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mysql2": "^2.3.3",
+    "sequelize": "^6.21.0",
+    "nodemailer": "^6.7.6",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uCOy/projetinho-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uCOy/projetinho-backend/issues"
+  },
+  "homepage": "https://github.com/uCOy/projetinho-backend#readme"
+}

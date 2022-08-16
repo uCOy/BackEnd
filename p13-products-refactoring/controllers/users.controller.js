@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const sendMail = require('../providers/mailProvider');
+const jwt = require('jsonwebtoken');
 
 exports.findAll = async (req, res) => {
     await User.findAll({
@@ -129,6 +130,14 @@ exports.delete = async (req, res) => {
 };
 
 exports.login = async (req, res) => {
+
+    await sleep(3000);
+    function sleep(ms){
+        return new Promise( (resolve) => {
+            setTimeout(resolve,ms)
+        })
+    }
+
     const user = await User.findOne({
         attributes: ['id', 'name', 'email', 'gender', 'password'],
         where: {
@@ -138,7 +147,7 @@ exports.login = async (req, res) => {
     if(user === null){
         return res.status(400).json({
             erro: true,
-            mensagem:"Erro: Email ou senha incorreta!!!"
+            mensagem:"Erro: Email ou senha incorreta!!"
         })
     }
     if(!(await bcrypt.compare(req.body.password, user.password))){
@@ -147,13 +156,43 @@ exports.login = async (req, res) => {
             mensagem: "Erro: Email ou senha incorreta!!!"
         })
     }
+
+    var token = jwt.sign({ id: user.id }, process.env.SECRET, {
+        expiresIn: 600 // 10min
+        // expiresIn: 60 // 1min
+    });
+
     return res.json({
         erro:false,
         mensagem: "Login realizado com sucesso!!!",
-        name: user.name,
-        email: user.email,
-        gender: user.gender
+        token
     })
+    
+    // const user = await User.findOne({
+        //     attributes: ['id', 'name', 'email', 'gender', 'password'],
+        //     where: {
+        //         email: req.body.email
+        //     }
+        // })
+        // if(user === null){
+        //     return res.status(400).json({
+        //         erro: true,
+        //         mensagem:"Erro: Email ou senha incorreta!!!"
+        //     })
+        // }
+        // if(!(await bcrypt.compare(req.body.password, user.password))){
+        //     return res.status(400).json({
+        //         erro: true,
+        //         mensagem: "Erro: Email ou senha incorreta!!!"
+        //     })
+        // }
+        // return res.json({
+        //     erro:false,
+        //     mensagem: "Login realizado com sucesso!!!",
+        //     name: user.name,
+        //     email: user.email,
+        //     gender: user.gender
+        // })
 };
 
 exports.password = async (req, res) => {
@@ -177,6 +216,30 @@ exports.password = async (req, res) => {
         return res.status(400).json({
             erro: true,
             mensagem: `Erro: ${err}... A senha não foi alterada!!!`
+        })
+    })
+};
+
+exports.validatoken = async(req, res) => {
+
+    await sleep(3000);
+    function sleep(ms) {
+      return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+      });
+    }
+
+    await User.findByPk(req.userId, { 
+        attributes: ['id','name','email']
+    }).then( (user) => {
+        return res.status(200).json({
+            erro: false,
+            user
+        })
+    }).catch( () => {
+        return res.status(400).json({
+            erro: true,
+            mensagem: "Erro: Necessário realizar o login!"
         })
     })
 };
