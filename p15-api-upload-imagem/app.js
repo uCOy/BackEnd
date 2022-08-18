@@ -3,14 +3,25 @@ var cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const app = express();
-const User = require('./models/User');
 require('dotenv').config();
 
+// ********** trabalhar com arquivos FS file system ********** //
+const fs = require('fs');
+
+// ********** Caminho de pasta path ********** //
+const path = require('path');
+
+// ********** Middlewares ********** //
 const { validarToken } = require('./middlewares/auth');
 const upload = require('./middlewares/uploadImgUser');
 
+const User = require('./models/User');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true}))
+
+// ********** Caminho para pasta upload ********** //
+app.use('/files', express.static(path.resolve(__dirname, "public", "upload")))
 
 app.use( (req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*");
@@ -55,9 +66,11 @@ app.get('/user/:id', validarToken, async (req, res) => {
                 mensagem: "Erro: Nenhum Usuário encontrado!"
             })
         }
+        var endImagem = "http://localhost:4500/files/users/"+users.image;
         res.status(200).json({
             erro:false,
-            users
+            users,
+            endImagem
         })
     } catch (err){
         res.status(400).json({
@@ -197,6 +210,25 @@ app.get('/validaToken', validarToken, async (req, res) =>{
 
 app.put('/edit-profile-image', validarToken, upload.single('image'), async (req, res) => {
     if(req.file){
+
+        console.log(req.file)
+
+        await User.findByPk(req.userId)
+        .then( user => {
+            console.log(user);
+            const imgOld = './public/upload/users/' + user.dataValues.image
+
+            fs.access(imgOld, (err) => {
+                if(!err){
+                    fs.unlink(imgOld, () => {})
+                }
+            })
+        }).catch( () => {
+            return res.status(400).json({
+                erro: true,
+                mensagem: "Erro: Perfil do Usuário não encontrado!"
+            })
+        })
 
         await User.update({image: req.file.filename}, 
             {where: {id: req.userId}})
