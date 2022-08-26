@@ -15,7 +15,7 @@ exports.findAll = async (req, res) => {
     }).catch( (err) => {
         return res.status(400).json({
             erro: true,
-            mensagem: `Erro: ${err} ou Nehum Produto encontrado!!!`
+            mensagem: `Erro: ${err} ou Nenhum Produto encontrado!!!`
         });
     });
 };
